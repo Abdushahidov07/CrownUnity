@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-from .models import User, UserProfile, HelpRequest, ChatMessage, ForumTopic, Donation
+from .models import User, UserProfile, HelpRequest, ChatMessage, ForumTopic, Donation, Work, Application
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
@@ -54,3 +54,15 @@ class DonationForm(forms.ModelForm):
                 ('general', 'General Fund')
             ])
         }
+
+class WorkForm(forms.ModelForm):
+    
+    class Meta:
+        model = Work
+        fields = ('title', 'description', 'category', 'image', 'video', 'user', 'region', 'address')
+
+class ApplicationForm(forms.ModelForm):
+    
+    class Meta:
+        model = Application
+        fields = ('user', 'message', 'price', 'duration', 'status')

@@ -66,3 +66,45 @@ class FundingReport(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     expense_description = models.TextField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+    image = models.ImageField(upload_to="static/images/category", null=True, blank=True)
+    
+    def __str__(self):
+        return self.name
+
+class Region(models.Model):
+    name = models.CharField(max_length=50)
+    image = models.ImageField(upload_to="static/images/region", null=True, blank=True)
+    
+    def __str__(self):
+        return self.name
+
+class Work(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="static/images/work", null=True, blank=True)
+    video = models.FileField(upload_to="static/videos/work", max_length=255, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    address = models.CharField(max_length=255)
+    created_on = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+
+class Application(models.Model):
+    work = models.ForeignKey(Work, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    price = models.IntegerField()
+    duration = models.CharField(max_length=50)
+    STATUS = (
+        ("HIRED", "hired"),
+        ("REJECTED", "rejected"),
+        ("IN PROCESS", "in process")
+    )
+    status = models.CharField(choices=STATUS, max_length=50)
+    created_on = models.DateTimeField(auto_now=True)
+
