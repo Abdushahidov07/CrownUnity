@@ -1,13 +1,13 @@
-{% load static %}
-{% load django_bootstrap5 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Support Platform{% endblock %}</title>
+    {% load static %}
+    {% load django_bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
+    <title>{% block title %}Support Platform{% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root {
@@ -160,6 +160,36 @@
             box-shadow: 0 5px 15px rgba(151, 71, 255, 0.2);
         }
 
+        /* Dropdown Styles */
+        .dropdown-menu {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(151, 71, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(151, 71, 255, 0.1);
+            border-radius: 15px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-item {
+            color: var(--text-dark);
+            font-weight: 500;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light-purple);
+            color: var(--primary-purple);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item i {
+            margin-right: 0.5rem;
+            color: var(--primary-purple);
+        }
+
         /* Responsive Design */
         @media (max-width: 991.98px) {
             .navbar-collapse {
@@ -231,6 +261,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">
@@ -238,8 +269,21 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'courses' %}">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'courses' %}active{% endif %}" 
+                           href="{% url 'courses' %}">
                             <i class="bi bi-book"></i> Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'work_list' %}active{% endif %}" 
+                           href="{% url 'work_list' %}">
+                            <i class="bi bi-briefcase"></i> Works
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'my_applications' %}active{% endif %}" 
+                           href="{% url 'my_applications' %}">
+                            <i class="bi bi-file-earmark-text"></i> Applications
                         </a>
                     </li>
                     <li class="nav-item">
@@ -258,9 +302,6 @@
                     <a class="nav-link" href="{% url 'profile' %}">
                         <i class="bi bi-person-circle"></i> Profile
                     </a>
-                    <!-- <a class="nav-link" href="{% url 'password_change' %}">
-                        <i class="bi bi-key"></i> Change Password
-                    </a> -->
                     <a class="nav-link" href="{% url 'logout' %}">
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </a>
@@ -277,15 +318,14 @@
                             Legal Chat
                         </a>
                         <div id="google_translate_element"></div>
-
                     </div>
-    
-                {% else %}
-                <div class="auth-buttons ms-auto">
-                    <a class="nav-link auth-button login" href="{% url 'login' %}">Login</a>
-                    <a class="nav-link auth-button signup" href="{% url 'signup' %}">Sign Up</a>
+                    {% else %}
+                    <div class="auth-buttons ms-auto">
+                        <a class="nav-link auth-button login" href="{% url 'login' %}">Login</a>
+                        <a class="nav-link auth-button signup" href="{% url 'signup' %}">Sign Up</a>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
         </div>
     </nav>
@@ -311,7 +351,7 @@
           script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
           document.body.appendChild(script);
         })();
-      </script>
+    </script>
     {% if messages %}
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         {% for message in messages %}

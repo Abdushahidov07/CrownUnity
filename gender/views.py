@@ -306,8 +306,22 @@ def work_delete_view(request, pk):
         return redirect(reverse_lazy("work_list"))
     return render(request, "work_delete.html", {'work': work})
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def application_create_view(request, pk):
     work = get_object_or_404(Work, pk=pk)
+    
+    # Check if user has already applied
+    existing_application = Application.objects.filter(work=work, user=request.user).first()
+    if existing_application:
+        messages.warning(request, 'You have already applied for this work.')
+        return redirect('work_detail', pk=work.id)
+    
+    # Check if user is trying to apply to their own work
+    if work.user == request.user:
+        messages.error(request, 'You cannot apply for your own work.')
+        return redirect('work_detail', pk=work.id)
     
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
@@ -315,16 +329,16 @@ def application_create_view(request, pk):
             application = form.save(commit=False)
             application.user = request.user
             application.work = work
-            application.status = "IN PROCESS"  # Set default status
+            application.status = "IN PROCESS"
             application.save()
-            messages.success(request, 'Application submitted successfully!')
+            messages.success(request, 'Your application has been submitted successfully!')
             return redirect('my_applications')
     else:
         form = ApplicationForm()
     
     return render(request, 'gender/application_create.html', {
-            'form': form,
-            'work': work
+        'form': form,
+        'work': work
     })
 
 def application_list_view(request):

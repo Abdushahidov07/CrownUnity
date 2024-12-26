@@ -70,7 +70,11 @@ class WorkForm(forms.ModelForm):
         }
 
 class ApplicationForm(forms.ModelForm):
-    
     class Meta:
         model = Application
-        fields = ('user', 'message', 'price', 'duration', 'status')
+        fields = ['message', 'price', 'duration']
+        widgets = {
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Enter your message'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter your price'}),
+            'duration': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter duration (e.g., 2 weeks)'}),
+        }

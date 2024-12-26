@@ -73,6 +73,20 @@
                             {% endif %}
                         </div>
 
+                        <div class="mb-4">
+                            <label for="{{ form.duration.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-clock me-2"></i>Duration
+                            </label>
+                            <input type="text" name="{{ form.duration.name }}" class="form-control form-control-lg rounded-3" 
+                                   placeholder="Enter duration (e.g., 2 weeks)" value="{{ form.duration.value|default:'' }}"
+                                   style="border-color: var(--secondary-purple);">
+                            {% if form.duration.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.duration.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
                         <div class="d-grid gap-3">
                             <button type="submit" class="btn btn-primary btn-lg rounded-3 py-3">
                                 <i class="bi bi-send-fill me-2"></i>Submit Application
