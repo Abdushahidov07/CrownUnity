@@ -11,7 +11,7 @@ from .forms import *
 from django.shortcuts import render, get_object_or_404, redirect
 
 class LandingView(TemplateView):
-    template_name = 'gender/landing.html'
+    template_name = 'gender/index.html'
 
 class CustomLoginView(LoginView):
     template_name = 'gender/login.html'
