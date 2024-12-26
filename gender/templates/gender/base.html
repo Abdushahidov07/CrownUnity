@@ -224,28 +224,12 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="{% url 'landing' %}">
-                <i class="bi bi-heart-fill"></i>
-                Support Platform
+                <img style="height:55px;width: 60px;" src="{% static "gender/logo.jpg" %}" alt="">
+                <p> </p>CrownUnity
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                {% if user.is_authenticated %}
-                <div class="nav-buttons me-auto">
-                    <a href="{% url 'help_request' %}" class="nav-link help-button sos">
-                        <i class="bi bi-shield-exclamation"></i>
-                        SOS Help
-                    </a>
-                    <a href="{% url 'chat' %}?type=legal" class="nav-link help-button legal">
-                        <i class="bi bi-file-text"></i>
-                        Legal Chat
-                    </a>
-                    <a href="{% url 'chat' %}?type=support" class="nav-link help-button support">
-                        <i class="bi bi-chat-dots"></i>
-                        Support Chat
-                    </a>
-                </div>
 
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
@@ -274,13 +258,28 @@
                     <a class="nav-link" href="{% url 'profile' %}">
                         <i class="bi bi-person-circle"></i> Profile
                     </a>
-                    <a class="nav-link" href="{% url 'password_change' %}">
+                    <!-- <a class="nav-link" href="{% url 'password_change' %}">
                         <i class="bi bi-key"></i> Change Password
-                    </a>
+                    </a> -->
                     <a class="nav-link" href="{% url 'logout' %}">
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </a>
                 </div>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    {% if user.is_authenticated %}
+                    <div class="nav-buttons me-auto">
+                        <a href="{% url 'help_request' %}" class="nav-link help-button sos">
+                            <i class="bi bi-shield-exclamation"></i>
+                            SOS Help
+                        </a>
+                        <a href="{% url 'chat' %}?type=legal" class="nav-link help-button legal">
+                            <i class="bi bi-file-text"></i>
+                            Legal Chat
+                        </a>
+                        <div id="google_translate_element"></div>
+
+                    </div>
+    
                 {% else %}
                 <div class="auth-buttons ms-auto">
                     <a class="nav-link auth-button login" href="{% url 'login' %}">Login</a>
@@ -295,7 +294,24 @@
         {% bootstrap_messages %}
         {% block content %}{% endblock %}
     </div>
-
+    
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+          new google.translate.TranslateElement({
+            pageLanguage: 'en',          // Язык страницы по умолчанию
+            includedLanguages: 'en,ru,tg',  // Поддерживаемые языки
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+          }, 'google_translate_element');
+        }
+      
+        // Подключаем скрипт Google Translate
+        (function() {
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+          document.body.appendChild(script);
+        })();
+      </script>
     {% if messages %}
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         {% for message in messages %}
