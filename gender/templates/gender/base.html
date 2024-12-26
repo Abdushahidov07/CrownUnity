@@ -309,14 +309,14 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     {% if user.is_authenticated %}
                     <div class="nav-buttons me-auto">
-                        <a href="{% url 'help_request' %}" class="nav-link help-button sos">
+                        {% comment %} <a href="{% url 'help_request' %}" class="nav-link help-button sos">
                             <i class="bi bi-shield-exclamation"></i>
                             SOS Help
                         </a>
                         <a href="{% url 'chat' %}?type=legal" class="nav-link help-button legal">
                             <i class="bi bi-file-text"></i>
                             Legal Chat
-                        </a>
+                        </a> {% endcomment %}
                         <div id="google_translate_element"></div>
                     </div>
                     {% else %}
@@ -339,7 +339,7 @@
         function googleTranslateElementInit() {
           new google.translate.TranslateElement({
             pageLanguage: 'en',          // Язык страницы по умолчанию
-            includedLanguages: 'en,ru,tg',  // Поддерживаемые языки
+            includedLanguages: 'en,ru,tg,fr,es',  // Поддерживаемые языки
             layout: google.translate.TranslateElement.InlineLayout.SIMPLE
           }, 'google_translate_element');
         }
