@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
-from .models import User, HelpRequest, ChatMessage, Course, ForumTopic, Donation, UserProfile
+from .models import User, HelpRequest, ChatMessage, Course, ForumTopic, Donation, UserProfile, Category, Region, Work, Application
 from .forms import *
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -205,33 +205,87 @@ class ProfileView(LoginRequiredMixin, UpdateView):
         messages.error(self.request, 'Please correct the errors below.')
         return super().form_invalid(form)
 
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'gender/category_list.html'
+    context_object_name = 'categories'
 
+class RegionListView(ListView):
+    model = Region
+    template_name = 'gender/region_list.html'
+    context_object_name = 'regions'
 
+class WorkListView(ListView):
+    model = Work
+    template_name = 'gender/work_list.html'
+    context_object_name = 'works'
 
+    def get_queryset(self):
+        queryset = Work.objects.filter(is_active=True)
+        category_id = self.request.GET.get('category')
+        region_id = self.request.GET.get('region')
+        
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+        if region_id:
+            queryset = queryset.filter(region_id=region_id)
+            
+        return queryset.order_by('-created_on')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        context['regions'] = Region.objects.all()
+        context['selected_category'] = self.request.GET.get('category')
+        context['selected_region'] = self.request.GET.get('region')
+        return context
 
 
 def work_create_view(request):
     if request.method == 'POST':
         form = WorkForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect(reverse_lazy("work_list"))
+            work = form.save(commit=False)
+            work.user = request.user
+            work.save()
+            messages.success(request, 'Work created successfully!')
+            return redirect('work_list')
     else:
         form = WorkForm()
-
-    return render(request, "work_create.html", {'form': form})
-
+    
+    return render(request, 'gender/work_create.html', {
+        'form': form
+    })
 
 def work_list_view(request):
     works = Work.objects.all()
     return render(request, "work_list.html", {'works': works})
 
-
 def work_detail_view(request, pk):
-    work = Work.objects.filter(id = pk).first()
-    applications = Application.objects.filter(work=work)
-    return render(request, "work_detail.html", {'work': work, 'application_work': applications})
+    work = get_object_or_404(Work, pk=pk)
+    applications = Application.objects.filter(work=work) if request.user == work.user else []
+    
+    return render(request, 'gender/work_detail.html', {
+        'work': work,
+        'applications': applications
+    })
 
+def my_applications_view(request):
+    applications = Application.objects.filter(user=request.user).order_by('-created_on')
+    return render(request, 'gender/my_applications.html', {
+        'applications': applications
+    })
+
+def accept_application(request, pk):
+    if request.method == 'POST':
+        application = get_object_or_404(Application, pk=pk)
+        if request.user == application.work.user:
+            application.status = True
+            application.save()
+            messages.success(request, 'Application accepted successfully!')
+        else:
+            messages.error(request, 'You do not have permission to accept this application.')
+    return redirect('work_detail', pk=application.work.id)
 
 def work_update_view(request, pk):
     work = get_object_or_404(Work, pk=pk)
@@ -245,14 +299,12 @@ def work_update_view(request, pk):
 
     return render(request, "work_update.html", {'form': form, 'work': work})
 
-
 def work_delete_view(request, pk):
     work = get_object_or_404(Work, pk=pk)
     if request.method == 'POST':
         work.delete()
         return redirect(reverse_lazy("work_list"))
     return render(request, "work_delete.html", {'work': work})
-
 
 def application_create_view(request, pk):
     work = get_object_or_404(Work, pk=pk)
@@ -261,24 +313,31 @@ def application_create_view(request, pk):
         form = ApplicationForm(request.POST)
         if form.is_valid():
             application = form.save(commit=False)
+            application.user = request.user
             application.work = work
+            application.status = "IN PROCESS"  # Set default status
             application.save()
-            return redirect(reverse_lazy("home"))
+            messages.success(request, 'Application submitted successfully!')
+            return redirect('my_applications')
     else:
         form = ApplicationForm()
-
-    return render(request, "application_create.html", {'form': form, 'work': work})
-
+    
+    return render(request, 'gender/application_create.html', {
+            'form': form,
+            'work': work
+    })
 
 def application_list_view(request):
-    applications = Application.objects.all()
-    return render(request, "application_list.html", {'applications': applications})
-
+    applications = Application.objects.filter(user=request.user)
+    return render(request, 'gender/application_list.html', {
+        'applications': applications
+    })
 
 def application_detail_view(request, pk):
     application = get_object_or_404(Application, pk=pk)
-    return render(request, "application_detail.html", {'application': application})
-
+    return render(request, 'gender/application_detail.html', {
+        'application': application
+    })
 
 def application_update_view(request, pk):
     application = get_object_or_404(Application, pk=pk)
@@ -287,18 +346,22 @@ def application_update_view(request, pk):
         form = ApplicationForm(request.POST, instance=application)
         if form.is_valid():
             form.save()
-            return redirect(reverse_lazy("work_detail", kwargs={'pk': application.work.pk}))
+            messages.success(request, 'Application updated successfully!')
+            return redirect('application_detail', pk=pk)
     else:
         form = ApplicationForm(instance=application)
 
-    return render(request, "application_update.html", {'form': form, 'application': application})
-
+    return render(request, 'gender/application_update.html', {
+        'form': form,
+        'application': application
+    })
 
 def application_delete_view(request, pk):
     application = get_object_or_404(Application, pk=pk)
-    
     if request.method == 'POST':
         application.delete()
-        return redirect(reverse_lazy("work_detail", kwargs={'pk': application.work.pk}))
-
-    return render(request, "application_delete.html", {'application': application})
+        messages.success(request, 'Application deleted successfully!')
+        return redirect('application_list')
+    return render(request, 'gender/application_delete.html', {
+        'application': application
+    })

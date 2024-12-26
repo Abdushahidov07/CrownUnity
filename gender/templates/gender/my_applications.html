@@ -1,0 +1,169 @@
+{% extends 'gender/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}My Applications{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h2 class="mb-4" style="color: var(--primary-purple);">
+                <i class="bi bi-file-earmark-text me-2"></i>My Applications
+            </h2>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <select class="form-select" id="statusFilter">
+                <option value="">All Statuses</option>
+                <option value="IN PROCESS">In Process</option>
+                <option value="HIRED">Hired</option>
+                <option value="REJECTED">Rejected</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for application in applications %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0 rounded-3">
+                {% if application.work.image %}
+                <img src="{{ application.work.image.url }}" class="card-img-top" alt="{{ application.work.title }}"
+                     style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="bi bi-briefcase" style="font-size: 3rem; color: var(--secondary-purple);"></i>
+                </div>
+                {% endif %}
+                
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">{{ application.work.title }}</h5>
+                        <span class="badge {% if application.status == 'HIRED' %}bg-success
+                                         {% elif application.status == 'REJECTED' %}bg-danger
+                                         {% else %}bg-warning{% endif %}">
+                            {{ application.status }}
+                        </span>
+                    </div>
+                    
+                    <p class="card-text text-muted small mb-3">
+                        <i class="bi bi-geo-alt-fill"></i> {{ application.work.region.name }} &bull;
+                        <i class="bi bi-tag-fill"></i> {{ application.work.category.name }}
+                    </p>
+                    
+                    <div class="mb-3">
+                        <strong class="d-block mb-2">Your Message:</strong>
+                        <p class="card-text">{{ application.message|truncatewords:30 }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong class="d-block mb-2">Your Price:</strong>
+                        <p class="card-text">{{ application.price }} KZT</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong class="d-block mb-2">Duration:</strong>
+                        <p class="card-text">{{ application.duration }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong class="d-block mb-2">Applied On:</strong>
+                        <p class="card-text text-muted">
+                            <i class="bi bi-calendar3"></i> {{ application.created_on|date:"d M Y" }}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-white border-top-0">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'work_detail' application.work.id %}" class="btn btn-outline-primary">
+                            <i class="bi bi-eye"></i> View Work
+                        </a>
+                        {% if application.status == "IN PROCESS" %}
+                        <div class="btn-group">
+                            <a href="{% url 'application_update' application.id %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" 
+                                    data-bs-target="#deleteModal{{ application.id }}">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteModal{{ application.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Delete</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete your application for <strong>{{ application.work.title }}</strong>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form action="{% url 'application_delete' application.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                You haven't submitted any applications yet.
+                <a href="{% url 'work_list' %}" class="alert-link">Browse available works</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .badge {
+        padding: 0.5em 1em;
+    }
+    .card {
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    .btn-outline-primary {
+        color: var(--primary-purple);
+        border-color: var(--primary-purple);
+    }
+    .btn-outline-primary:hover {
+        background-color: var(--primary-purple);
+        border-color: var(--primary-purple);
+        color: white;
+    }
+</style>
+
+<script>
+document.getElementById('statusFilter').addEventListener('change', function() {
+    const status = this.value;
+    const cards = document.querySelectorAll('.col-md-6');
+    
+    cards.forEach(card => {
+        const badge = card.querySelector('.badge');
+        if (!status || badge.textContent.trim() === status) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

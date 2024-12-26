@@ -1,9 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import (
-    User, UserProfile, HelpRequest, ChatMessage,
-    Course, ForumTopic, Donation, FundingReport
-)
+from .models import *
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
@@ -11,6 +8,9 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ('is_staff', 'is_superuser', 'groups')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('username',)
+    
+admin.site.register(Category)
+admin.site.register(Region)
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):

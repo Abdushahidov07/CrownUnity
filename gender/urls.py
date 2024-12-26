@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from.views import *
+from .views import CategoryListView, RegionListView, WorkListView
 
 urlpatterns = [
     path('', views.LandingView.as_view(), name='landing'),
@@ -16,8 +17,9 @@ urlpatterns = [
     path('forum/create/', views.ForumCreateView.as_view(), name='forum_create'),
     path('donate/', views.DonationCreateView.as_view(), name='donate'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
-
-    path("work_list/", work_list_view, name="work_list"),
+    path('categories/', CategoryListView.as_view(), name='category_list'),
+    path('regions/', RegionListView.as_view(), name='region_list'),
+    path('works/', WorkListView.as_view(), name='work_list'),
     path("work_create/", work_create_view, name="work_create"),
     path("work_detail/<int:pk>/", work_detail_view, name="work_detail"),
     path("application_create/<int:pk>/", application_create_view, name="application_create"),
@@ -27,5 +29,6 @@ urlpatterns = [
     path("application_delete/<int:pk>/", application_delete_view, name="application_delete"),
     path("work_update/<int:pk>/", work_update_view, name="work_update"),
     path("work_delete/<int:pk>/", work_delete_view, name="work_delete"),
+    path('my-applications/', my_applications_view, name='my_applications'),
+    path('application/<int:pk>/accept/', accept_application, name='accept_application'),
 ]
-

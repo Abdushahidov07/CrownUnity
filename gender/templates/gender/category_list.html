@@ -1,0 +1,37 @@
+{% extends 'gender/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4 text-center" style="color: var(--primary-purple);">Categories</h2>
+        </div>
+    </div>
+    <div class="row g-4">
+        {% for category in categories %}
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                {% if category.image %}
+                <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-collection" style="font-size: 3rem; color: var(--secondary-purple);"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ category.name }}</h5>
+                    <a href="{% url 'work_list' %}?category={{ category.id }}" class="btn btn-outline-primary w-100">View Works</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p>No categories available.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

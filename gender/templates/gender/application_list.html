@@ -1,0 +1,51 @@
+{% extends 'gender/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Applications{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4" style="color: var(--primary-purple);">Your Applications</h2>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for application in applications %}
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ application.work.title }}</h5>
+                    <p class="card-text text-muted">
+                        <small>
+                            <i class="bi bi-geo-alt"></i> {{ application.work.region.name }} |
+                            <i class="bi bi-tag"></i> {{ application.work.category.name }}
+                        </small>
+                    </p>
+                    <p class="card-text">
+                        <strong>Your Message:</strong><br>
+                        {{ application.message|truncatewords:30 }}
+                    </p>
+                    <p class="card-text">
+                        <strong>Your Price:</strong><br>
+                        {{ application.price }} KZT
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'application_detail' application.id %}" class="btn btn-outline-primary">
+                            <i class="bi bi-eye"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle"></i> You haven't submitted any applications yet.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

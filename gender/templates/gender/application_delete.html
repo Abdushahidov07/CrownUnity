@@ -1,0 +1,35 @@
+{% extends 'gender/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Delete Application{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h2 class="card-title mb-4" style="color: var(--primary-purple);">Delete Application</h2>
+                    
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Are you sure you want to delete your application for <strong>{{ application.work.title }}</strong>?
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Delete Application
+                            </button>
+                            <a href="{% url 'application_detail' application.id %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

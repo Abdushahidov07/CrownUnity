@@ -56,10 +56,18 @@ class DonationForm(forms.ModelForm):
         }
 
 class WorkForm(forms.ModelForm):
-    
     class Meta:
         model = Work
-        fields = ('title', 'description', 'category', 'image', 'video', 'user', 'region', 'address')
+        fields = ['title', 'description', 'category', 'image', 'video', 'region', 'address']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter work title'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Enter work description'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'region': forms.Select(attrs={'class': 'form-control'}),
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter address'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'video': forms.FileInput(attrs={'class': 'form-control'}),
+        }
 
 class ApplicationForm(forms.ModelForm):
     

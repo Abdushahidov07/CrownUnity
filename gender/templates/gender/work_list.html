@@ -1,0 +1,106 @@
+{% extends 'gender/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Works{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 style="color: var(--primary-purple);">Works</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'work_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Work
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <select class="form-select" id="categoryFilter">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}" {% if selected_category == category.id %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" id="regionFilter">
+                <option value="">All Regions</option>
+                {% for region in regions %}
+                <option value="{{ region.id }}" {% if selected_region == region.id %}selected{% endif %}>
+                    {{ region.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for work in works %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                {% if work.image %}
+                <img src="{{ work.image.url }}" class="card-img-top" alt="{{ work.title }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-briefcase" style="font-size: 3rem; color: var(--secondary-purple);"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ work.title }}</h5>
+                    <p class="card-text text-muted">
+                        <small>
+                            <i class="bi bi-geo-alt"></i> {{ work.region.name }}<br>
+                            <i class="bi bi-tag"></i> {{ work.category.name }}
+                        </small>
+                    </p>
+                    <p class="card-text">{{ work.description|truncatewords:20 }}</p>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'work_detail' work.id %}" class="btn btn-outline-primary mb-2">
+                            <i class="bi bi-eye"></i> View Details
+                        </a>
+                        <a href="{% url 'application_create' work.id %}" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Apply for Work
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p>No works available.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.getElementById('categoryFilter').addEventListener('change', function() {
+    updateFilters();
+});
+
+document.getElementById('regionFilter').addEventListener('change', function() {
+    updateFilters();
+});
+
+function updateFilters() {
+    const categoryId = document.getElementById('categoryFilter').value;
+    const regionId = document.getElementById('regionFilter').value;
+    
+    let url = new URL(window.location.href);
+    if (categoryId) url.searchParams.set('category', categoryId);
+    else url.searchParams.delete('category');
+    
+    if (regionId) url.searchParams.set('region', regionId);
+    else url.searchParams.delete('region');
+    
+    window.location.href = url.toString();
+}
+</script>
+{% endblock %}
