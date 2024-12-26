@@ -1,0 +1,180 @@
+{% extends 'gender/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Educational Courses{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Educational Resources</h2>
+            <div class="search-bar mb-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search courses..." id="courseSearch">
+                    <button class="btn btn-primary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card course-card h-100">
+                <div class="card-body">
+                    <div class="course-icon">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text">{{ course.description }}</p>
+                    <div class="course-meta">
+                        <span class="duration">
+                            <i class="bi bi-clock"></i> {{ course.duration }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ course.materials_link }}" class="btn btn-primary btn-block w-100">
+                        Start Learning
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <div class="empty-state">
+                <i class="bi bi-journal-x"></i>
+                <h3>No Courses Available</h3>
+                <p>Check back later for new educational content.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .search-bar {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .search-bar .form-control {
+        border-radius: 20px 0 0 20px;
+        padding: 0.75rem 1.5rem;
+        border: 2px solid #e9ecef;
+    }
+
+    .search-bar .btn {
+        border-radius: 0 20px 20px 0;
+        padding: 0.75rem 1.5rem;
+    }
+
+    .course-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .course-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .course-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .course-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .card-title {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #2c3e50;
+    }
+
+    .course-meta {
+        margin: 1rem 0;
+        color: #6c757d;
+    }
+
+    .duration {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(37, 117, 252, 0.2);
+    }
+
+    .empty-state {
+        padding: 3rem;
+        text-align: center;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+    }
+
+    @media (max-width: 768px) {
+        .course-card {
+            margin-bottom: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('courseSearch');
+        const courseCards = document.querySelectorAll('.course-card');
+
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+
+            courseCards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const description = card.querySelector('.card-text').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.closest('.col-md-6').style.display = '';
+                } else {
+                    card.closest('.col-md-6').style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

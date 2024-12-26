@@ -1,0 +1,316 @@
+{% load static %}
+{% load django_bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Support Platform{% endblock %}</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary-purple: #9747FF;
+            --secondary-purple: #B07CFF;
+            --light-purple: #F3E8FF;
+            --accent-pink: #FF69B4;
+            --text-dark: #2D1F3F;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--light-purple);
+            min-height: 100vh;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(151, 71, 255, 0.1);
+            border-bottom: 1px solid rgba(151, 71, 255, 0.1);
+            padding: 1.5rem 0;  /* Увеличили толщину навбара */
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-purple) !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: translateY(-2px);
+        }
+
+        .navbar-brand i {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--primary-purple), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-dark) !important;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem !important;
+            margin: 0 0.2rem;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background: linear-gradient(135deg, var(--primary-purple), var(--accent-pink));
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-purple) !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Help Buttons in Navbar */
+        .help-button {
+            padding: 0.5rem 1rem;  /* Уменьшили padding кнопок */
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            color: white !important;
+            margin: 0 0.3rem;  /* Уменьшили отступы между кнопками */
+            font-size: 0.9rem;  /* Уменьшили размер шрифта */
+        }
+
+        .help-button i {
+            font-size: 1rem;  /* Уменьшили размер иконок */
+            margin: 0 !important;
+        }
+
+        .help-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(151, 71, 255, 0.2);
+        }
+
+        .help-button.sos {
+            background: linear-gradient(135deg, #ff6b6b, var(--accent-pink));
+        }
+
+        .help-button.legal {
+            background: linear-gradient(135deg, var(--primary-purple), #4dabf7);
+        }
+
+        .help-button.support {
+            background: linear-gradient(135deg, #40c057, #69db7c);
+        }
+
+        /* Auth Buttons */
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .auth-button {
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;  /* Уменьшили размер шрифта */
+        }
+
+        .auth-button.login {
+            background: var(--primary-purple);
+            border-color: var(--primary-purple);
+            color: white !important;
+        }
+
+        .auth-button.signup {
+            background: transparent;
+            border: 2px solid var(--primary-purple);
+            color: var(--primary-purple) !important;
+        }
+
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(151, 71, 255, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border-radius: 15px;
+                padding: 1rem;
+                margin-top: 1rem;
+                box-shadow: 0 10px 30px rgba(151, 71, 255, 0.1);
+            }
+
+            .help-button, .auth-button {
+                width: 100%;
+                justify-content: center;
+                margin: 0.3rem 0;  /* Уменьшили отступы на мобильных */
+                padding: 0.5rem;  /* Уменьшили padding на мобильных */
+            }
+
+            .auth-buttons {
+                flex-direction: column;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Apply Animations */
+        .navbar-brand {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .nav-link {
+            animation: slideIn 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .nav-item:nth-child(1) .nav-link { animation-delay: 0.1s; }
+        .nav-item:nth-child(2) .nav-link { animation-delay: 0.2s; }
+        .nav-item:nth-child(3) .nav-link { animation-delay: 0.3s; }
+        .nav-item:nth-child(4) .nav-link { animation-delay: 0.4s; }
+
+        .help-button {
+            animation: fadeIn 0.5s ease-out;
+            animation-delay: 0.5s;
+            animation-fill-mode: both;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'landing' %}">
+                <i class="bi bi-heart-fill"></i>
+                Support Platform
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                {% if user.is_authenticated %}
+                <div class="nav-buttons me-auto">
+                    <a href="{% url 'help_request' %}" class="nav-link help-button sos">
+                        <i class="bi bi-shield-exclamation"></i>
+                        SOS Help
+                    </a>
+                    <a href="{% url 'chat' %}?type=legal" class="nav-link help-button legal">
+                        <i class="bi bi-file-text"></i>
+                        Legal Chat
+                    </a>
+                    <a href="{% url 'chat' %}?type=support" class="nav-link help-button support">
+                        <i class="bi bi-chat-dots"></i>
+                        Support Chat
+                    </a>
+                </div>
+
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="bi bi-house-door"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'courses' %}">
+                            <i class="bi bi-book"></i> Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'forum_list' %}">
+                            <i class="bi bi-people"></i> Forum
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'donate' %}">
+                            <i class="bi bi-heart"></i> Donate
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="auth-buttons">
+                    <a class="nav-link" href="{% url 'profile' %}">
+                        <i class="bi bi-person-circle"></i> Profile
+                    </a>
+                    <a class="nav-link" href="{% url 'password_change' %}">
+                        <i class="bi bi-key"></i> Change Password
+                    </a>
+                    <a class="nav-link" href="{% url 'logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+                {% else %}
+                <div class="auth-buttons ms-auto">
+                    <a class="nav-link auth-button login" href="{% url 'login' %}">Login</a>
+                    <a class="nav-link auth-button signup" href="{% url 'signup' %}">Sign Up</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% bootstrap_messages %}
+        {% block content %}{% endblock %}
+    </div>
+
+    {% if messages %}
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        {% for message in messages %}
+        <div class="toast show" role="alert">
+            <div class="toast-header">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</body>
+</html>

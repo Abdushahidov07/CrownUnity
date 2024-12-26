@@ -1,0 +1,243 @@
+{% extends 'gender/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Support Chat{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Chat List Sidebar -->
+        <div class="col-md-4 col-lg-3">
+            <div class="card chat-list-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Support Channels</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action active" data-type="legal">
+                        <i class="bi bi-shield-check"></i> Legal Support
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" data-type="psychological">
+                        <i class="bi bi-heart"></i> Psychological Support
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" data-type="general">
+                        <i class="bi bi-chat-dots"></i> General Support
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Window -->
+        <div class="col-md-8 col-lg-9">
+            <div class="card chat-window-card">
+                <div class="card-header chat-header">
+                    <div class="d-flex align-items-center">
+                        <div class="status-indicator online"></div>
+                        <h5 class="mb-0 ms-2">Legal Support</h5>
+                    </div>
+                </div>
+                <div class="card-body chat-messages" id="chatMessages">
+                    <!-- Messages will be dynamically loaded here -->
+                    <div class="message-group received">
+                        <div class="message">
+                            <div class="message-content">
+                                Hello! How can I assist you today?
+                            </div>
+                            <div class="message-time">10:00 AM</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <form id="messageForm" class="message-form">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Type your message..." id="messageInput">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .chat-list-card {
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        height: calc(100vh - 120px);
+    }
+
+    .chat-window-card {
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-header {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+        padding: 1rem;
+    }
+
+    .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+
+    .status-indicator.online {
+        background-color: #28a745;
+    }
+
+    .chat-messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+    }
+
+    .message-group {
+        margin-bottom: 1rem;
+    }
+
+    .message {
+        max-width: 70%;
+        margin-bottom: 0.5rem;
+    }
+
+    .message-group.sent {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .message-group.sent .message-content {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+        border-radius: 15px 15px 0 15px;
+    }
+
+    .message-group.received .message-content {
+        background: white;
+        border-radius: 15px 15px 15px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .message-content {
+        padding: 0.8rem 1rem;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    .message-form {
+        padding: 1rem;
+        background-color: white;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .message-form .form-control {
+        border-radius: 20px;
+        padding: 0.75rem 1rem;
+    }
+
+    .message-form .btn {
+        border-radius: 20px;
+        padding: 0.75rem 1.5rem;
+        margin-left: 0.5rem;
+    }
+
+    .list-group-item {
+        border: none;
+        padding: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .list-group-item i {
+        margin-right: 0.5rem;
+    }
+
+    .list-group-item.active {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        border-color: transparent;
+    }
+
+    .list-group-item:hover:not(.active) {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+    }
+
+    /* Scrollbar Styling */
+    .chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageForm = document.getElementById('messageForm');
+        const messageInput = document.getElementById('messageInput');
+        const chatMessages = document.getElementById('chatMessages');
+        const channelLinks = document.querySelectorAll('.list-group-item');
+
+        // Handle channel switching
+        channelLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Remove active class from all links
+                channelLinks.forEach(l => l.classList.remove('active'));
+                // Add active class to clicked link
+                this.classList.add('active');
+                // Update chat header
+                document.querySelector('.chat-header h5').textContent = this.textContent.trim();
+            });
+        });
+
+        // Handle message sending
+        messageForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (message) {
+                // Add message to chat
+                const messageHTML = `
+                    <div class="message-group sent">
+                        <div class="message">
+                            <div class="message-content">
+                                ${message}
+                            </div>
+                            <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                        </div>
+                    </div>
+                `;
+                chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+    });
+</script>
+{% endblock %}

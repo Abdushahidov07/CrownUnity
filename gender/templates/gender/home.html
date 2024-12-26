@@ -1,0 +1,66 @@
+{% extends 'gender/base.html' %}
+
+{% block title %}Home - Support Platform{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>Welcome, {{ user.first_name|default:user.username }}!</h2>
+        <p class="lead">How can we help you today?</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-danger">Emergency Help</h5>
+                <p class="card-text">Need immediate assistance? Click the SOS button to send your location to trusted contacts.</p>
+                <a href="{% url 'help_request' %}" class="btn btn-danger">SOS</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Support Chat</h5>
+                <p class="card-text">Talk to our professional counselors and legal advisors anonymously.</p>
+                <a href="{% url 'chat' %}" class="btn btn-primary">Start Chat</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-success">Educational Resources</h5>
+                <p class="card-text">Access our courses and learn about personal safety and prevention.</p>
+                <a href="{% url 'courses' %}" class="btn btn-success">View Courses</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Community Forum</h5>
+                <p class="card-text">Connect with others, share experiences, and find support in our community.</p>
+                <a href="{% url 'forum_list' %}" class="btn btn-outline-primary">Visit Forum</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Support Our Cause</h5>
+                <p class="card-text">Help us continue providing support by making a donation.</p>
+                <a href="{% url 'donate' %}" class="btn btn-outline-success">Donate Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

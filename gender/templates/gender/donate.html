@@ -1,0 +1,221 @@
+{% extends 'gender/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Make a Donation{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card donation-card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Support Our Cause</h2>
+                    <div class="donation-info mb-4">
+                        <p class="text-center">Your donation helps us provide essential support and resources to those in need.</p>
+                    </div>
+                    
+                    <div class="donation-amounts mb-4">
+                        <div class="row g-2">
+                            <div class="col-6 col-md-3">
+                                <button class="btn btn-outline-primary w-100 amount-btn" data-amount="10">$10</button>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <button class="btn btn-outline-primary w-100 amount-btn" data-amount="25">$25</button>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <button class="btn btn-outline-primary w-100 amount-btn" data-amount="50">$50</button>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <button class="btn btn-outline-primary w-100 amount-btn" data-amount="100">$100</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" class="donation-form">
+                        {% csrf_token %}
+                        {% bootstrap_form form %}
+                        
+                        <div class="allocation-options mb-4">
+                            <label class="form-label">Fund Allocation</label>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <div class="form-check allocation-option">
+                                        <input class="form-check-input" type="radio" name="fund_allocation" value="emergency" checked>
+                                        <label class="form-check-label">Emergency Support</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check allocation-option">
+                                        <input class="form-check-input" type="radio" name="fund_allocation" value="education">
+                                        <label class="form-check-label">Education Programs</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check allocation-option">
+                                        <input class="form-check-input" type="radio" name="fund_allocation" value="general">
+                                        <label class="form-check-label">General Fund</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary donate-btn">
+                                <i class="bi bi-heart-fill"></i> Make Donation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="impact-section mt-4">
+                <div class="card impact-card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-3">Your Impact</h5>
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="impact-item">
+                                    <i class="bi bi-house-heart"></i>
+                                    <h6>Safe Shelters</h6>
+                                    <p>Provide temporary safe housing</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="impact-item">
+                                    <i class="bi bi-book"></i>
+                                    <h6>Education</h6>
+                                    <p>Support educational programs</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="impact-item">
+                                    <i class="bi bi-heart-pulse"></i>
+                                    <h6>Emergency Aid</h6>
+                                    <p>Immediate assistance</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .donation-card {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+
+    .card-title {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .donation-info p {
+        color: #6c757d;
+    }
+
+    .amount-btn {
+        border-radius: 10px;
+        padding: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .amount-btn:hover, .amount-btn.active {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+        border-color: transparent;
+    }
+
+    .donation-form .form-control {
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .allocation-option {
+        padding: 0.5rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .allocation-option:hover {
+        background-color: #f8f9fa;
+    }
+
+    .donate-btn {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        border: none;
+        padding: 1rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .donate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(37, 117, 252, 0.2);
+    }
+
+    .impact-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .impact-item {
+        padding: 1rem;
+    }
+
+    .impact-item i {
+        font-size: 2rem;
+        color: #6a11cb;
+        margin-bottom: 1rem;
+    }
+
+    .impact-item h6 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .impact-item p {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .donation-card {
+            margin: 0 1rem;
+        }
+        
+        .impact-item {
+            margin-bottom: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const amountBtns = document.querySelectorAll('.amount-btn');
+        const amountInput = document.querySelector('input[name="amount"]');
+
+        amountBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                amountBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                // Set amount in the input field
+                amountInput.value = this.dataset.amount;
+            });
+        });
+    });
+</script>
+{% endblock %}

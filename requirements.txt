@@ -1,0 +1,5 @@
+Django==5.0
+django-crispy-forms==2.1
+pillow==10.1.0
+django-bootstrap5==23.3
+channels==4.0.0
