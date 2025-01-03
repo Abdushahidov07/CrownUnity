@@ -318,6 +318,15 @@
                             Legal Chat
                         </a> {% endcomment %}
                         <div id="google_translate_element"></div>
+                        <div class="dropdown">
+                            <button class="btn btn-link nav-link position-relative" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-bell"></i>
+                                <span class="badge bg-danger rounded-pill" id="notificationBadge" style="display: none;">0</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" id="notificationsList" style="width: 300px;">
+                                <div class="dropdown-item">Загрузка уведомлений...</div>
+                            </div>
+                        </div>
                     </div>
                     {% else %}
                     <div class="auth-buttons ms-auto">
@@ -331,7 +340,6 @@
     </nav>
 
     <div class="container mt-4">
-        {% bootstrap_messages %}
         {% block content %}{% endblock %}
     </div>
     
@@ -352,9 +360,66 @@
           document.body.appendChild(script);
         })();
     </script>
+    <script>
+        function updateNotifications() {
+            fetch('{% url "get_notifications" %}')
+                .then(response => response.json())
+                .then(data => {
+                    const notificationsList = document.getElementById('notificationsList');
+                    const notificationBadge = document.getElementById('notificationBadge');
+                    
+                    if (data.notifications.length > 0) {
+                        notificationBadge.textContent = data.notifications.length;
+                        notificationBadge.style.display = 'inline';
+                        
+                        notificationsList.innerHTML = '';
+                        data.notifications.forEach(notification => {
+                            const item = document.createElement('div');
+                            item.className = 'dropdown-item';
+                            item.innerHTML = `
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div>${notification.message}</div>
+                                        <small class="text-muted">${notification.created_at}</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-link" onclick="markNotificationRead(${notification.id})">
+                                        <i class="bi bi-check2"></i>
+                                    </button>
+                                </div>
+                            `;
+                            notificationsList.appendChild(item);
+                        });
+                    } else {
+                        notificationBadge.style.display = 'none';
+                        notificationsList.innerHTML = '<div class="dropdown-item">Нет новых уведомлений</div>';
+                    }
+                });
+        }
+
+        function markNotificationRead(id) {
+            fetch(`/notifications/${id}/mark-read/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateNotifications();
+                }
+            });
+        }
+
+        // Обновляем уведомления при загрузке и каждые 30 секунд
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNotifications();
+            setInterval(updateNotifications, 30000);
+        });
+    </script>
     {% if messages %}
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        {% for message in messages %}
+        {% for message in messages|slice:":3" %}
         <div class="toast show" role="alert">
             <div class="toast-header">
                 <i class="bi bi-info-circle me-2"></i>
@@ -365,7 +430,7 @@
                 {{ message }}
             </div>
         </div>
-        {% endfor %}
+    {% endfor %}    
     </div>
     {% endif %}
 </body>

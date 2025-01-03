@@ -120,6 +120,9 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Google AI API Key
+GOOGLE_AI_API_KEY = 'AIzaSyCVWVcimW1gvIZcgWe9IAyMtWzcgdU6df8'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

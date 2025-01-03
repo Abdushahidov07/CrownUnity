@@ -1,22 +1,20 @@
 from django.urls import path
-from . import views
 from.views import *
-from .views import CategoryListView, RegionListView, WorkListView
 
 urlpatterns = [
-    path('', views.LandingView.as_view(), name='landing'),
-    path('login/', views.CustomLoginView.as_view(), name='login'),
-    path('logout/', views.CustomLogoutView.as_view(), name='logout'),
-    path('signup/', views.SignUpView.as_view(), name='signup'),
-    path('password-change/', views.CustomPasswordChangeView.as_view(), name='password_change'),
-    path('home/', views.HomeView.as_view(), name='home'),
-    path('help-request/', views.HelpRequestCreateView.as_view(), name='help_request'),
-    path('chat/', views.ChatListView.as_view(), name='chat'),
-    path('courses/', views.CourseListView.as_view(), name='courses'),
-    path('forum/', views.ForumListView.as_view(), name='forum_list'),
-    path('forum/create/', views.ForumCreateView.as_view(), name='forum_create'),
-    path('donate/', views.DonationCreateView.as_view(), name='donate'),
-    path('profile/', views.ProfileView.as_view(), name='profile'),
+    path('', LandingView.as_view(), name='landing'),
+    path('login/', CustomLoginView.as_view(), name='login'),
+    path('logout/', CustomLogoutView.as_view(), name='logout'),
+    path('signup/', SignUpView.as_view(), name='signup'),
+    path('password-change/', CustomPasswordChangeView.as_view(), name='password_change'),
+    path('home/', HomeView.as_view(), name='home'),
+    path('help-request/', HelpRequestCreateView.as_view(), name='help_request'),
+    path('chat/', ChatListView.as_view(), name='chat'),
+    path('courses/', CourseListView.as_view(), name='courses'),
+    path('forum/', ForumListView.as_view(), name='forum_list'),
+    path('forum/create/', ForumCreateView.as_view(), name='forum_create'),
+    path('donate/', DonationCreateView.as_view(), name='donate'),
+    path('profile/', ProfileView.as_view(), name='profile'),
     path('categories/', CategoryListView.as_view(), name='category_list'),
     path('regions/', RegionListView.as_view(), name='region_list'),
     path('works/', WorkListView.as_view(), name='work_list'),
@@ -31,4 +29,6 @@ urlpatterns = [
     path("work_delete/<int:pk>/", work_delete_view, name="work_delete"),
     path('my-applications/', my_applications_view, name='my_applications'),
     path('application/<int:pk>/accept/', accept_application, name='accept_application'),
+    path('notifications/', get_notifications, name='get_notifications'),
+    path('notifications/<int:notification_id>/mark-read/', mark_notification_read, name='mark_notification_read'),
 ]

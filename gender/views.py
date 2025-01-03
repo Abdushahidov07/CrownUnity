@@ -6,9 +6,12 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
-from .models import User, HelpRequest, ChatMessage, Course, ForumTopic, Donation, UserProfile, Category, Region, Work, Application
+from django.db.models import Q
+from .models import User, HelpRequest, ChatMessage, Course, ForumTopic, Donation, UserProfile, Category, Region, Work, Application, Notification
 from .forms import *
 from django.shortcuts import render, get_object_or_404, redirect
+from django.conf import settings
+from .services.ai_service import AIService
 
 class LandingView(TemplateView):
     template_name = 'gender/index.html'
@@ -66,21 +69,77 @@ class ChatListView(LoginRequiredMixin, ListView):
     context_object_name = 'messages'
 
     def get_queryset(self):
+        chat_type = self.request.GET.get('type', 'general')
         return ChatMessage.objects.filter(
-            sender=self.request.user
-        ).order_by('-sent_time')
+            Q(sender=self.request.user) | Q(receiver=self.request.user),
+            chat_type=chat_type
+        ).order_by('sent_time')
 
     def post(self, request, *args, **kwargs):
-        if request.is_ajax():
-            message = request.POST.get('message')
-            if message:
-                ChatMessage.objects.create(
+        message_text = request.POST.get('message')
+        chat_type = request.POST.get('chat_type', 'general')
+        
+        if message_text:
+            try:
+                # Создаем сообщение пользователя
+                user_message = ChatMessage.objects.create(
                     sender=request.user,
-                    message_text=message,
-                    sent_time=timezone.now()
+                    message_text=message_text,
+                    sent_time=timezone.now(),
+                    chat_type=chat_type
                 )
-                return JsonResponse({'status': 'success'})
-        return JsonResponse({'status': 'error'})
+
+                # Инициализируем сервис AI с API ключом
+                ai_service = AIService(settings.GOOGLE_AI_API_KEY)
+                
+                # Получаем контекст из предыдущих сообщений
+                previous_messages = ChatMessage.objects.filter(
+                    Q(sender=request.user) | Q(receiver=request.user),
+                    chat_type=chat_type
+                ).order_by('-sent_time')[:5]
+                
+                context = []
+                for msg in reversed(previous_messages):
+                    context.append({
+                        'is_user': not msg.is_ai_response,
+                        'content': msg.message_text
+                    })
+                
+                # Получаем ответ от AI с учетом типа чата
+                ai_response = ai_service.get_ai_response(message_text, context, chat_type)
+                
+                # Создаем сообщение AI
+                ai_message = ChatMessage.objects.create(
+                    sender=request.user,
+                    message_text=ai_response,
+                    sent_time=timezone.now(),
+                    is_ai_response=True,
+                    chat_type=chat_type
+                )
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'user_message': {
+                        'text': message_text,
+                        'time': user_message.sent_time.strftime('%H:%M')
+                    },
+                    'ai_response': {
+                        'text': ai_response,
+                        'time': ai_message.sent_time.strftime('%H:%M')
+                    }
+                })
+                
+            except Exception as e:
+                print(f"Ошибка в представлении чата: {str(e)}")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Не удалось обработать ответ AI'
+                })
+                
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Сообщение не предоставлено'
+        })
 
 class CourseListView(LoginRequiredMixin, ListView):
     model = Course
@@ -379,3 +438,32 @@ def application_delete_view(request, pk):
     return render(request, 'gender/application_delete.html', {
         'application': application
     })
+
+def get_notifications(request):
+    if request.user.is_authenticated:
+        # Получаем только последние 3 непрочитанные уведомления
+        notifications = Notification.objects.filter(
+            user=request.user,
+            is_read=False
+        ).order_by('-created_at')[:3]
+        
+        return JsonResponse({
+            'notifications': [
+                {
+                    'id': notif.id,
+                    'message': notif.message,
+                    'created_at': notif.created_at.strftime('%H:%M'),
+                    'type': notif.notification_type,
+                    'is_read': notif.is_read
+                } for notif in notifications
+            ]
+        })
+    return JsonResponse({'notifications': []})
+
+def mark_notification_read(request, notification_id):
+    if request.user.is_authenticated:
+        notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'})

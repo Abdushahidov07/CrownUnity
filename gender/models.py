@@ -32,11 +32,25 @@ class HelpRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class ChatMessage(models.Model):
+    CHAT_TYPES = [
+        ('legal', 'Правовая поддержка'),
+        ('psychological', 'Психологическая поддержка'),
+        ('general', 'Общая поддержка'),
+    ]
+    
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
-    receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE, null=True, blank=True)
     message_text = models.TextField()
     sent_time = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    is_ai_response = models.BooleanField(default=False)
+    chat_type = models.CharField(max_length=20, choices=CHAT_TYPES, default='general')
+
+    class Meta:
+        ordering = ['sent_time']
+        
+    def __str__(self):
+        return f"{self.sender}: {self.message_text[:50]}"
 
 class Course(models.Model):
     title = models.CharField(max_length=200)
@@ -108,3 +122,22 @@ class Application(models.Model):
     status = models.CharField(choices=STATUS, max_length=50)
     created_on = models.DateTimeField(auto_now=True)
 
+class Notification(models.Model):
+    NOTIFICATION_TYPES = (
+        ('info', 'Информация'),
+        ('success', 'Успех'),
+        ('warning', 'Предупреждение'),
+        ('error', 'Ошибка'),
+    )
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    message = models.TextField()
+    notification_type = models.CharField(max_length=10, choices=NOTIFICATION_TYPES, default='info')
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        
+    def __str__(self):
+        return f"{self.user.username} - {self.message[:50]}"

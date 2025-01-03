@@ -1,7 +1,7 @@
 {% extends 'gender/base.html' %}
 {% load django_bootstrap5 %}
 
-{% block title %}Support Chat{% endblock %}
+{% block title %}Поддержка Чата{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-4">
@@ -10,17 +10,17 @@
         <div class="col-md-4 col-lg-3">
             <div class="card chat-list-card">
                 <div class="card-header">
-                    <h5 class="mb-0">Support Channels</h5>
+                    <h5 class="mb-0">Каналы Поддержки</h5>
                 </div>
                 <div class="list-group list-group-flush">
                     <a href="#" class="list-group-item list-group-item-action active" data-type="legal">
-                        <i class="bi bi-shield-check"></i> Legal Support
+                        <i class="bi bi-shield-check"></i> Правовая Поддержка
                     </a>
                     <a href="#" class="list-group-item list-group-item-action" data-type="psychological">
-                        <i class="bi bi-heart"></i> Psychological Support
+                        <i class="bi bi-heart"></i> Психологическая Поддержка
                     </a>
                     <a href="#" class="list-group-item list-group-item-action" data-type="general">
-                        <i class="bi bi-chat-dots"></i> General Support
+                        <i class="bi bi-chat-dots"></i> Общая Поддержка
                     </a>
                 </div>
             </div>
@@ -32,7 +32,7 @@
                 <div class="card-header chat-header">
                     <div class="d-flex align-items-center">
                         <div class="status-indicator online"></div>
-                        <h5 class="mb-0 ms-2">Legal Support</h5>
+                        <h5 class="mb-0 ms-2">Правовая Поддержка</h5>
                     </div>
                 </div>
                 <div class="card-body chat-messages" id="chatMessages">
@@ -40,9 +40,9 @@
                     <div class="message-group received">
                         <div class="message">
                             <div class="message-content">
-                                Hello! How can I assist you today?
+                                Здравствуйте! Чем я могу помочь?
                             </div>
-                            <div class="message-time">10:00 AM</div>
+                            <div class="message-time">10:00</div>
                         </div>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                     <form id="messageForm" class="message-form">
                         {% csrf_token %}
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Type your message..." id="messageInput">
+                            <input type="text" class="form-control" placeholder="Введите ваше сообщение..." id="messageInput">
                             <button class="btn btn-primary" type="submit">
                                 <i class="bi bi-send"></i>
                             </button>
@@ -199,44 +199,95 @@
         const messageInput = document.getElementById('messageInput');
         const chatMessages = document.getElementById('chatMessages');
         const channelLinks = document.querySelectorAll('.list-group-item');
+        let currentChatType = 'legal'; // По умолчанию правовая поддержка
 
-        // Handle channel switching
-        channelLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Remove active class from all links
-                channelLinks.forEach(l => l.classList.remove('active'));
-                // Add active class to clicked link
-                this.classList.add('active');
-                // Update chat header
-                document.querySelector('.chat-header h5').textContent = this.textContent.trim();
-            });
-        });
+        // Функция для добавления сообщения в чат
+        function addMessage(message, time, isAI = false) {
+            const messageHTML = `
+                <div class="message-group ${isAI ? 'received' : 'sent'}">
+                    <div class="message">
+                        <div class="message-content">
+                            ${message}
+                        </div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
 
-        // Handle message sending
         messageForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const message = messageInput.value.trim();
             if (message) {
-                // Add message to chat
-                const messageHTML = `
-                    <div class="message-group sent">
+                const formData = new FormData();
+                formData.append('message', message);
+                formData.append('chat_type', currentChatType);
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+                fetch('{% url "chat" %}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        addMessage(data.user_message.text, data.user_message.time);
+                        addMessage(data.ai_response.text, data.ai_response.time, true);
+                        messageInput.value = '';
+                    } else {
+                        addMessage('Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте еще раз.', 
+                                 new Date().toLocaleTimeString(), true);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    addMessage('Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте еще раз.',
+                             new Date().toLocaleTimeString(), true);
+                });
+            }
+        });
+
+        // Обработка переключения каналов
+        channelLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Обновляем активное состояние
+                channelLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Получаем тип чата из data-атрибута
+                currentChatType = this.dataset.type;
+                
+                // Обновляем заголовок
+                document.querySelector('.chat-header h5').textContent = this.textContent.trim();
+                
+                // Очищаем сообщения чата
+                chatMessages.innerHTML = `
+                    <div class="message-group received">
                         <div class="message">
                             <div class="message-content">
-                                ${message}
+                                Здравствуйте! Чем я могу помочь?
                             </div>
                             <div class="message-time">${new Date().toLocaleTimeString()}</div>
                         </div>
                     </div>
                 `;
-                chatMessages.insertAdjacentHTML('beforeend', messageHTML);
-                
-                // Clear input
-                messageInput.value = '';
-                
-                // Scroll to bottom
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+
+                // Загружаем сообщения для выбранного типа чата
+                fetch(`{% url 'chat' %}?type=${currentChatType}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.messages && data.messages.length > 0) {
+                            chatMessages.innerHTML = '';
+                            data.messages.forEach(msg => {
+                                addMessage(msg.message_text, msg.sent_time, msg.is_ai_response);
+                            });
+                        }
+                    });
+            });
         });
     });
 </script>
