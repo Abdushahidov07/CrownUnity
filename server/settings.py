@@ -97,7 +97,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Login settings
 LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'landing'
+LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
 # Internationalization

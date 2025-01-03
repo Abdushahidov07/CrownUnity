@@ -20,44 +20,111 @@
             
             {% if not user.is_authenticated %}
             <div class="action-buttons">
-                <a href="{% url 'login' %}" class="btn btn-primary btn-lg action-button login">Login</a>
-                <a href="{% url 'signup' %}" class="btn btn-outline-primary btn-lg action-button signup">Sign Up</a>
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg action-button login">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                </a>
+                <a href="{% url 'signup' %}" class="btn btn-outline-primary btn-lg action-button signup">
+                    <i class="bi bi-person-plus me-2"></i>Sign Up
+                </a>
             </div>
             {% endif %}
         </div>
     </div>
 
-    {% if not user.is_authenticated %}
-    <div class="features-section">
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-shield-fill"></i>
-            </div>
-            <h3>Safe Space</h3>
-            <p>A secure and confidential environment for seeking help and support.</p>
+    <div class="statistics-section">
+        <div class="stat-card">
+            <div class="stat-number">5000+</div>
+            <div class="stat-label">People Helped</div>
         </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-people-fill"></i>
-            </div>
-            <h3>Professional Support</h3>
-            <p>Access to qualified legal and psychological assistance.</p>
+        <div class="stat-card">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Support Available</div>
         </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-book-fill"></i>
-            </div>
-            <h3>Resources</h3>
-            <p>Educational materials and guidance for prevention and awareness.</p>
+        <div class="stat-card">
+            <div class="stat-number">100+</div>
+            <div class="stat-label">Expert Volunteers</div>
         </div>
     </div>
-    {% endif %}
-</div>
-{% endblock %}
 
-{% block extra_css %}
+    <div class="features-section">
+        <h2 class="section-title">How We Can Help</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-shield-fill"></i>
+                </div>
+                <h3>Safe Space</h3>
+                <p>A secure and confidential environment for seeking help and support. Your privacy is our top priority.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <h3>Professional Support</h3>
+                <p>Access to qualified legal and psychological assistance from experienced professionals.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-book-fill"></i>
+                </div>
+                <h3>Resources</h3>
+                <p>Educational materials and guidance for prevention and awareness of gender-based violence.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </div>
+                <h3>24/7 Chat Support</h3>
+                <p>Immediate assistance through our AI-powered chat system and human volunteers.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="services-section">
+        <h2 class="section-title">Our Services</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <img src="{% static 'gender/images/legal.jpg' %}" alt="Legal Support" class="service-image">
+                <div class="service-content">
+                    <h3>Legal Support</h3>
+                    <p>Free legal consultation and guidance through legal procedures</p>
+                    <ul class="service-list">
+                        <li><i class="bi bi-check-circle-fill"></i> Legal documentation help</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Court representation</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Rights education</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <img src="{% static 'gender/images/counseling.jpg' %}" alt="Counseling" class="service-image">
+                <div class="service-content">
+                    <h3>Psychological Support</h3>
+                    <p>Professional counseling and emotional support</p>
+                    <ul class="service-list">
+                        <li><i class="bi bi-check-circle-fill"></i> Individual therapy</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Group support sessions</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Crisis intervention</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <div class="cta-content">
+            <h2>Need Immediate Help?</h2>
+            <p>Our support team is available 24/7 to assist you in complete confidentiality.</p>
+            <a href="{% url 'signup' %}" class="btn btn-primary btn-lg cta-button">
+                <i class="bi bi-headset me-2"></i>Get Help Now
+            </a>
+        </div>
+    </div>
+</div>
+
 <style>
     :root {
         --primary-purple: #9747FF;
@@ -67,28 +134,10 @@
         --text-dark: #2D1F3F;
     }
 
-    body {
-        background: var(--light-purple);
-    }
-
     .landing-container {
         background: linear-gradient(135deg, var(--light-purple) 0%, #fff 50%, var(--light-purple) 100%);
-        min-height: calc(100vh - 56px);
-        padding: 2rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .landing-container::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle, var(--secondary-purple) 0%, transparent 70%);
-        opacity: 0.1;
-        transform: rotate(-45deg);
+        min-height: 100vh;
+        overflow-x: hidden;
     }
 
     .hero-section {
@@ -98,156 +147,166 @@
         z-index: 1;
     }
 
-    .logo-container {
-        margin-bottom: 2rem;
-        position: relative;
-    }
-
-    .logo-circle {
-        width: 150px;
-        height: 150px;
-        background: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-        box-shadow: 0 15px 30px rgba(151, 71, 255, 0.2);
-        position: relative;
-        overflow: hidden;
-        border: 4px solid var(--primary-purple);
-    }
-
-    .hands {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .logo-circle i {
-        font-size: 3rem;
-        position: absolute;
-    }
-
-    .logo-circle i:first-child {
-        color: var(--primary-purple);
-        transform: translateX(-15px) rotate(-15deg);
-    }
-
-    .logo-circle i:last-child {
-        color: var(--accent-pink);
-        transform: translateX(15px);
-    }
-
     .main-title {
-        font-size: 4rem;
-        font-weight: 800;
+        font-size: 3.5rem;
+        font-weight: 700;
         color: var(--text-dark);
-        margin-bottom: 1.5rem;
+        margin: 1rem 0;
         background: linear-gradient(135deg, var(--primary-purple), var(--accent-pink));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
 
     .lead-text {
-        font-size: 1.25rem;
+        font-size: 1.2rem;
         color: var(--text-dark);
         max-width: 800px;
-        margin: 0 auto 3rem;
-        line-height: 1.8;
+        margin: 0 auto 2rem;
     }
 
-    .action-buttons {
+    .statistics-section {
         display: flex;
-        gap: 1.5rem;
         justify-content: center;
-        margin-bottom: 3rem;
+        gap: 2rem;
+        padding: 2rem 0;
+        flex-wrap: wrap;
     }
 
-    .action-button {
-        padding: 1rem 3rem;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 10px 20px rgba(151, 71, 255, 0.1);
+        min-width: 200px;
     }
 
-    .action-button.login {
-        background: var(--primary-purple);
-        border-color: var(--primary-purple);
-        color: white;
-    }
-
-    .action-button.signup {
-        border-color: var(--primary-purple);
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
         color: var(--primary-purple);
+        margin-bottom: 0.5rem;
     }
 
-    .action-button:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(151, 71, 255, 0.2);
+    .stat-label {
+        color: var(--text-dark);
+        font-weight: 500;
     }
 
-    .features-section {
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 3rem 0;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 10px 20px rgba(151, 71, 255, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        color: var(--primary-purple);
+        margin-bottom: 1rem;
+    }
+
+    .services-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 2rem;
         padding: 2rem;
         max-width: 1200px;
         margin: 0 auto;
-        position: relative;
-        z-index: 1;
     }
 
-    .feature-card {
-        background: rgba(255, 255, 255, 0.9);
-        padding: 2.5rem;
-        border-radius: 30px;
-        text-align: center;
-        box-shadow: 0 20px 40px rgba(151, 71, 255, 0.1);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(151, 71, 255, 0.1);
-        backdrop-filter: blur(10px);
+    .service-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(151, 71, 255, 0.1);
     }
 
-    .feature-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 30px 60px rgba(151, 71, 255, 0.2);
-        border-color: var(--primary-purple);
+    .service-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
     }
 
-    .feature-icon {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
+    .service-content {
+        padding: 2rem;
+    }
+
+    .service-list {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0 0;
+    }
+
+    .service-list li {
         display: flex;
         align-items: center;
-        justify-content: center;
-        margin: 0 auto 2rem;
-        background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
-        box-shadow: 0 10px 20px rgba(151, 71, 255, 0.2);
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
     }
 
-    .feature-icon i {
-        font-size: 2.5rem;
+    .service-list i {
+        color: var(--primary-purple);
+    }
+
+    .cta-section {
+        background: linear-gradient(135deg, var(--primary-purple), var(--accent-pink));
+        padding: 4rem 2rem;
+        text-align: center;
+        margin-top: 4rem;
+    }
+
+    .cta-content {
+        max-width: 800px;
+        margin: 0 auto;
         color: white;
     }
 
-    .feature-card h3 {
-        color: var(--text-dark);
+    .cta-content h2 {
+        font-size: 2.5rem;
         margin-bottom: 1rem;
-        font-weight: 700;
-        font-size: 1.5rem;
     }
 
-    .feature-card p {
-        color: #6c757d;
-        margin-bottom: 1.5rem;
-        line-height: 1.6;
+    .cta-button {
+        background: white;
+        color: var(--primary-purple);
+        border: none;
+        margin-top: 1.5rem;
+        font-weight: 600;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+
+    .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        background: var(--light-purple);
+        color: var(--primary-purple);
     }
 
     @media (max-width: 768px) {
@@ -255,45 +314,21 @@
             font-size: 2.5rem;
         }
 
-        .features-section {
+        .statistics-section {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-card {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .features-grid,
+        .services-grid {
             grid-template-columns: 1fr;
             padding: 1rem;
         }
-
-        .action-buttons {
-            flex-direction: column;
-            padding: 0 1rem;
-        }
-
-        .action-button {
-            width: 100%;
-        }
-
-        .logo-circle {
-            width: 120px;
-            height: 120px;
-        }
-
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-        }
-    }
-
-    @keyframes float {
-        0% {
-            transform: translateY(0px);
-        }
-        50% {
-            transform: translateY(-10px);
-        }
-        100% {
-            transform: translateY(0px);
-        }
-    }
-
-    .logo-container {
-        animation: float 3s ease-in-out infinite;
     }
 </style>
 {% endblock %}

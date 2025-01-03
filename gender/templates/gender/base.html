@@ -22,6 +22,7 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--light-purple);
             min-height: 100vh;
+            top: 0 !important;
         }
 
         /* Navbar Styles */
@@ -30,8 +31,11 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 30px rgba(151, 71, 255, 0.1);
             border-bottom: 1px solid rgba(151, 71, 255, 0.1);
-            padding: 1.5rem 0;  /* Увеличили толщину навбара */
+            padding: 1.5rem 0;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1000;
+            height: 100px;
         }
 
         .navbar-brand {
@@ -56,32 +60,17 @@
         }
 
         .nav-link {
-            font-weight: 500;
             color: var(--text-dark) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
             transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 1rem !important;
             margin: 0 0.2rem;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background: linear-gradient(135deg, var(--primary-purple), var(--accent-pink));
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
         }
 
         .nav-link:hover {
             color: var(--primary-purple) !important;
+            background: var(--light-purple);
             transform: translateY(-2px);
         }
 
@@ -128,34 +117,40 @@
         }
 
         /* Auth Buttons */
-        .auth-buttons {
+        .nav-auth-buttons {
+            margin-left: auto;
             display: flex;
-            gap: 1rem;
+            align-items: center;
+            gap: 10px;
+            position: relative;
         }
 
-        .auth-button {
+        .nav-login-btn {
+            color: var(--primary-purple) !important;
+            border: 2px solid var(--primary-purple);
+            border-radius: 12px;
             padding: 0.5rem 1.5rem;
-            border-radius: 50px;
             font-weight: 600;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;  /* Уменьшили размер шрифта */
-        }
-
-        .auth-button.login {
-            background: var(--primary-purple);
-            border-color: var(--primary-purple);
-            color: white !important;
-        }
-
-        .auth-button.signup {
             background: transparent;
-            border: 2px solid var(--primary-purple);
-            color: var(--primary-purple) !important;
         }
 
-        .auth-button:hover {
+        .nav-login-btn:hover {
+            background: var(--light-purple);
+            transform: translateY(-2px);
+        }
+
+        .nav-signup-btn {
+            background: linear-gradient(135deg, var(--primary-purple), var(--accent-pink));
+            color: white !important;
+            border: none;
+            border-radius: 12px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-signup-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(151, 71, 255, 0.2);
         }
@@ -188,6 +183,117 @@
         .dropdown-item i {
             margin-right: 0.5rem;
             color: var(--primary-purple);
+        }
+
+        /* Profile Dropdown Styles */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-dropdown .dropdown-menu {
+            position: absolute;
+            right: 0;
+            left: auto;
+            top: 100%;
+            margin-top: 0.5rem;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(151, 71, 255, 0.1);
+            min-width: 200px;
+            z-index: 1001;
+        }
+
+        .profile-dropdown .dropdown-item {
+            padding: 0.7rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+
+        .profile-dropdown .dropdown-item:hover {
+            background-color: var(--light-purple);
+            color: var(--primary-purple);
+            transform: translateX(5px);
+        }
+
+        .profile-dropdown .dropdown-divider {
+            margin: 0.5rem 0;
+            border-color: rgba(151, 71, 255, 0.1);
+        }
+
+        .profile-dropdown .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .profile-dropdown .nav-link:hover {
+            background-color: var(--light-purple);
+        }
+
+        /* Language Switcher Styles */
+        #google_translate_element {
+            margin-right: 15px;
+        }
+        
+        #google_translate_element .goog-te-gadget {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+        }
+
+        #google_translate_element .goog-te-gadget-simple {
+            background-color: white !important;
+            border: 1px solid var(--primary-purple) !important;
+            border-radius: 20px !important;
+            padding: 5px 10px !important;
+            font-size: 14px !important;
+            color: var(--text-dark) !important;
+            cursor: pointer;
+            display: flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+        }
+
+        #google_translate_element .goog-te-gadget-simple img {
+            display: none !important;
+        }
+
+        #google_translate_element .goog-te-gadget-simple .goog-te-menu-value {
+            color: var(--text-dark) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+        }
+
+        #google_translate_element .goog-te-gadget-simple .goog-te-menu-value span {
+            color: var(--text-dark) !important;
+            border: none !important;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+        }
+
+        #google_translate_element .goog-te-gadget-simple:hover {
+            border-color: var(--accent-pink) !important;
+            box-shadow: 0 2px 8px rgba(151, 71, 255, 0.1);
+        }
+
+        .goog-te-banner-frame {
+            display: none !important;
+        }
+
+        /* Центрирование навбара */
+        .navbar-nav {
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
         }
 
         /* Responsive Design */
@@ -262,7 +368,8 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">
                             <i class="bi bi-house-door"></i> Home
@@ -281,58 +388,46 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'my_applications' %}active{% endif %}" 
-                           href="{% url 'my_applications' %}">
-                            <i class="bi bi-file-earmark-text"></i> Applications
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'forum_list' %}">
-                            <i class="bi bi-people"></i> Forum
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'donate' %}">
                             <i class="bi bi-heart"></i> Donate
                         </a>
                     </li>
                 </ul>
+                {% endif %}
 
-                <div class="auth-buttons">
-                    <a class="nav-link" href="{% url 'profile' %}">
-                        <i class="bi bi-person-circle"></i> Profile
-                    </a>
-                    <a class="nav-link" href="{% url 'logout' %}">
-                        <i class="bi bi-box-arrow-right"></i> Logout
-                    </a>
-                </div>
-                <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="nav-auth-buttons">
+                    <div id="google_translate_element"></div>
                     {% if user.is_authenticated %}
-                    <div class="nav-buttons me-auto">
-                        {% comment %} <a href="{% url 'help_request' %}" class="nav-link help-button sos">
-                            <i class="bi bi-shield-exclamation"></i>
-                            SOS Help
-                        </a>
-                        <a href="{% url 'chat' %}?type=legal" class="nav-link help-button legal">
-                            <i class="bi bi-file-text"></i>
-                            Legal Chat
-                        </a> {% endcomment %}
-                        <div id="google_translate_element"></div>
-                        <div class="dropdown">
-                            <button class="btn btn-link nav-link position-relative" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-bell"></i>
-                                <span class="badge bg-danger rounded-pill" id="notificationBadge" style="display: none;">0</span>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" id="notificationsList" style="width: 300px;">
-                                <div class="dropdown-item">Загрузка уведомлений...</div>
-                            </div>
+                        <div class="nav-item dropdown profile-dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle fs-5"></i>
+                                <span>{{ user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="bi bi-person"></i> My Profile
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'my_applications' %}">
+                                    <i class="bi bi-file-earmark-text"></i> Applications
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'history' %}">
+                                    <i class="bi bi-clock-history"></i> History
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </a></li>
+                            </ul>
                         </div>
-                    </div>
                     {% else %}
-                    <div class="auth-buttons ms-auto">
-                        <a class="nav-link auth-button login" href="{% url 'login' %}">Login</a>
-                        <a class="nav-link auth-button signup" href="{% url 'signup' %}">Sign Up</a>
-                    </div>
+                        <div class="d-flex align-items-center">
+                            <a href="{% url 'login' %}" class="nav-link me-3">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                            <a href="{% url 'signup' %}" class="nav-link">
+                                <i class="bi bi-person-plus"></i> Sign Up
+                            </a>
+                        </div>
                     {% endif %}
                 </div>
             </div>

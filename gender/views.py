@@ -24,7 +24,7 @@ class CustomLoginView(LoginView):
         return self.success_url
 
 class CustomLogoutView(LogoutView):
-    next_page = reverse_lazy('landing')
+    next_page = reverse_lazy('login')
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
@@ -467,3 +467,12 @@ def mark_notification_read(request, notification_id):
         notification.save()
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'})
+
+class HistoryView(LoginRequiredMixin, TemplateView):
+    template_name = 'gender/history.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['help_requests'] = HelpRequest.objects.filter(user=self.request.user).order_by('-created_at')
+        context['donations'] = Donation.objects.filter(donor=self.request.user).order_by('-donation_date')
+        return context

@@ -1,66 +1,405 @@
 {% extends 'gender/base.html' %}
+{% load static %}
 
 {% block title %}Home - Support Platform{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12 mb-4">
-        <h2>Welcome, {{ user.first_name|default:user.username }}!</h2>
-        <p class="lead">How can we help you today?</p>
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="user-welcome">
+            <div class="user-avatar">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="welcome-text">
+                <h2>Welcome back, {{ user.first_name|default:user.username }}!</h2>
+                <p class="last-visit">Last visit: {% now "F j, Y, g:i a" %}</p>
+            </div>
+        </div>
+        <div class="quick-stats">
+            <div class="stat-item">
+                <i class="bi bi-chat-dots"></i>
+                <span class="stat-number">{{ help_requests.count }}</span>
+                <span class="stat-label">Help Requests</span>
+            </div>
+            <div class="stat-item">
+                <i class="bi bi-book"></i>
+                <span class="stat-number">{{ forum_topics.count }}</span>
+                <span class="stat-label">Forum Topics</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Priority Actions -->
+    <div class="action-cards">
+        <div class="action-card emergency">
+            <div class="card-icon">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div class="card-content">
+                <h3>Emergency Help</h3>
+                <p>Need immediate assistance? Click the SOS button to send your location to trusted contacts.</p>
+                <a href="{% url 'help_request' %}" class="btn btn-danger action-button">
+                    <i class="bi bi-shield-fill"></i>SOS Help
+                </a>
+            </div>
+        </div>
+
+        <div class="action-card support">
+            <div class="card-icon">
+                <i class="bi bi-headset"></i>
+            </div>
+            <div class="card-content">
+                <h3>24/7 Support Chat</h3>
+                <p>Talk to our professional counselors and legal advisors anonymously and securely.</p>
+                <a href="{% url 'chat' %}" class="btn btn-primary action-button">
+                    <i class="bi bi-chat-dots-fill"></i>Start Chat
+                </a>
+            </div>
+        </div>
+
+        <div class="action-card education">
+            <div class="card-icon">
+                <i class="bi bi-book-fill"></i>
+            </div>
+            <div class="card-content">
+                <h3>Learning Resources</h3>
+                <p>Access our comprehensive courses on personal safety, rights, and prevention.</p>
+                <a href="{% url 'courses' %}" class="btn btn-success action-button">
+                    <i class="bi bi-journal-text"></i>View Courses
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Services -->
+    <div class="services-grid">
+        <div class="service-card forum">
+            <div class="service-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="service-content">
+                <h3>Community Forum</h3>
+                <p>Connect with others, share experiences, and find support in our community.</p>
+                <div class="forum-preview">
+                    {% for topic in forum_topics %}
+                    <div class="forum-item">
+                        <i class="bi bi-chat-left-text"></i>
+                        <span>{{ topic.title }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'forum_list' %}" class="btn btn-outline-primary service-button">
+                    <i class="bi bi-arrow-right-circle"></i>Visit Forum
+                </a>
+            </div>
+        </div>
+
+        <div class="service-card donate">
+            <div class="service-icon">
+                <i class="bi bi-heart-fill"></i>
+            </div>
+            <div class="service-content">
+                <h3>Support Our Cause</h3>
+                <p>Help us continue providing support to those in need. Every contribution matters.</p>
+                <div class="donation-progress">
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
+                    </div>
+                    <span class="progress-text">75% of monthly goal reached</span>
+                </div>
+                <a href="{% url 'donate' %}" class="btn btn-outline-success service-button">
+                    <i class="bi bi-gift"></i>Make a Donation
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+        <h3><i class="bi bi-clock-history"></i>Recent Activity</h3>
+        <div class="activity-list">
+            {% for request in help_requests %}
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="bi bi-bell-fill"></i>
+                </div>
+                <div class="activity-content">
+                    <h4>Help Request</h4>
+                    <p>{{ request.description|truncatechars:100 }}</p>
+                    <span class="activity-time">{{ request.created_at|timesince }} ago</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title text-danger">Emergency Help</h5>
-                <p class="card-text">Need immediate assistance? Click the SOS button to send your location to trusted contacts.</p>
-                <a href="{% url 'help_request' %}" class="btn btn-danger">SOS</a>
-            </div>
-        </div>
-    </div>
+<style>
+    .dashboard-container {
+        padding: 2rem;
+        background: var(--light-purple);
+    }
 
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title text-primary">Support Chat</h5>
-                <p class="card-text">Talk to our professional counselors and legal advisors anonymously.</p>
-                <a href="{% url 'chat' %}" class="btn btn-primary">Start Chat</a>
-            </div>
-        </div>
-    </div>
+    /* Welcome Section */
+    .welcome-section {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 20px rgba(151, 71, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
 
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title text-success">Educational Resources</h5>
-                <p class="card-text">Access our courses and learn about personal safety and prevention.</p>
-                <a href="{% url 'courses' %}" class="btn btn-success">View Courses</a>
-            </div>
-        </div>
-    </div>
-</div>
+    .user-welcome {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
 
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">Community Forum</h5>
-                <p class="card-text">Connect with others, share experiences, and find support in our community.</p>
-                <a href="{% url 'forum_list' %}" class="btn btn-outline-primary">Visit Forum</a>
-            </div>
-        </div>
-    </div>
+    .user-avatar {
+        font-size: 3rem;
+        color: var(--primary-purple);
+    }
 
-    <div class="col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">Support Our Cause</h5>
-                <p class="card-text">Help us continue providing support by making a donation.</p>
-                <a href="{% url 'donate' %}" class="btn btn-outline-success">Donate Now</a>
-            </div>
-        </div>
-    </div>
-</div>
+    .welcome-text h2 {
+        margin: 0;
+        color: var(--text-dark);
+        font-weight: 700;
+    }
+
+    .last-visit {
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .quick-stats {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-item i {
+        font-size: 1.5rem;
+        color: var(--primary-purple);
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    /* Action Cards */
+    .action-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .action-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 20px rgba(151, 71, 255, 0.1);
+        transition: transform 0.3s ease;
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-icon {
+        font-size: 2.5rem;
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .emergency .card-icon {
+        background: linear-gradient(135deg, #ff6b6b, #ff8787);
+    }
+
+    .support .card-icon {
+        background: linear-gradient(135deg, var(--primary-purple), var(--accent-pink));
+    }
+
+    .education .card-icon {
+        background: linear-gradient(135deg, #20c997, #38d9a9);
+    }
+
+    .card-content {
+        flex: 1;
+    }
+
+    .card-content h3 {
+        margin: 0 0 0.5rem;
+        color: var(--text-dark);
+        font-weight: 600;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding: 0.5rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    /* Services Grid */
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .service-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 20px rgba(151, 71, 255, 0.1);
+    }
+
+    .service-icon {
+        font-size: 2rem;
+        color: var(--primary-purple);
+        margin-bottom: 1rem;
+    }
+
+    .service-content h3 {
+        margin: 0 0 1rem;
+        color: var(--text-dark);
+        font-weight: 600;
+    }
+
+    .forum-preview {
+        margin: 1rem 0;
+    }
+
+    .forum-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 8px;
+        background: var(--light-purple);
+        margin-bottom: 0.5rem;
+    }
+
+    .donation-progress {
+        margin: 1rem 0;
+    }
+
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+        background: var(--light-purple);
+    }
+
+    .progress-text {
+        display: block;
+        margin-top: 0.5rem;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .service-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding: 0.5rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    /* Recent Activity */
+    .recent-activity {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 20px rgba(151, 71, 255, 0.1);
+    }
+
+    .recent-activity h3 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: start;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 10px;
+        background: var(--light-purple);
+        margin-bottom: 1rem;
+    }
+
+    .activity-icon {
+        font-size: 1.2rem;
+        color: var(--primary-purple);
+    }
+
+    .activity-content h4 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--text-dark);
+    }
+
+    .activity-time {
+        display: block;
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .welcome-section {
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        .user-welcome {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quick-stats {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .action-cards,
+        .services-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 {% endblock %}
