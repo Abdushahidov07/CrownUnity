@@ -11,6 +11,7 @@ class CustomUserAdmin(UserAdmin):
     
 admin.site.register(Category)
 admin.site.register(Region)
+admin.site.register(Work)
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):

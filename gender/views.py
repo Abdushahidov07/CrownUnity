@@ -63,83 +63,6 @@ class HelpRequestCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, 'Help request submitted successfully. We will contact you soon.')
         return response
 
-class ChatListView(LoginRequiredMixin, ListView):
-    model = ChatMessage
-    template_name = 'gender/chat.html'
-    context_object_name = 'messages'
-
-    def get_queryset(self):
-        chat_type = self.request.GET.get('type', 'general')
-        return ChatMessage.objects.filter(
-            Q(sender=self.request.user) | Q(receiver=self.request.user),
-            chat_type=chat_type
-        ).order_by('sent_time')
-
-    def post(self, request, *args, **kwargs):
-        message_text = request.POST.get('message')
-        chat_type = request.POST.get('chat_type', 'general')
-        
-        if message_text:
-            try:
-                # Создаем сообщение пользователя
-                user_message = ChatMessage.objects.create(
-                    sender=request.user,
-                    message_text=message_text,
-                    sent_time=timezone.now(),
-                    chat_type=chat_type
-                )
-
-                # Инициализируем сервис AI с API ключом
-                ai_service = AIService(settings.GOOGLE_AI_API_KEY)
-                
-                # Получаем контекст из предыдущих сообщений
-                previous_messages = ChatMessage.objects.filter(
-                    Q(sender=request.user) | Q(receiver=request.user),
-                    chat_type=chat_type
-                ).order_by('-sent_time')[:5]
-                
-                context = []
-                for msg in reversed(previous_messages):
-                    context.append({
-                        'is_user': not msg.is_ai_response,
-                        'content': msg.message_text
-                    })
-                
-                # Получаем ответ от AI с учетом типа чата
-                ai_response = ai_service.get_ai_response(message_text, context, chat_type)
-                
-                # Создаем сообщение AI
-                ai_message = ChatMessage.objects.create(
-                    sender=request.user,
-                    message_text=ai_response,
-                    sent_time=timezone.now(),
-                    is_ai_response=True,
-                    chat_type=chat_type
-                )
-                
-                return JsonResponse({
-                    'status': 'success',
-                    'user_message': {
-                        'text': message_text,
-                        'time': user_message.sent_time.strftime('%H:%M')
-                    },
-                    'ai_response': {
-                        'text': ai_response,
-                        'time': ai_message.sent_time.strftime('%H:%M')
-                    }
-                })
-                
-            except Exception as e:
-                print(f"Ошибка в представлении чата: {str(e)}")
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'Не удалось обработать ответ AI'
-                })
-                
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Сообщение не предоставлено'
-        })
 
 class CourseListView(LoginRequiredMixin, ListView):
     model = Course
@@ -476,3 +399,89 @@ class HistoryView(LoginRequiredMixin, TemplateView):
         context['help_requests'] = HelpRequest.objects.filter(user=self.request.user).order_by('-created_at')
         context['donations'] = Donation.objects.filter(donor=self.request.user).order_by('-donation_date')
         return context
+
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.utils import timezone
+from django.conf import settings
+from .models import ChatMessage
+from django.db.models import Q
+from django.views.generic import View
+from .services.ai_service import AIService  # Assuming you placed the AIService class in ai_service.py
+
+class ChatListView(View):
+    def get(self, request, *args, **kwargs):
+        chat_type = request.GET.get('type', 'general')
+        messages = ChatMessage.objects.filter(
+            Q(sender=request.user) | Q(receiver=request.user),
+            chat_type=chat_type
+        ).order_by('sent_time')
+        return render(request, 'gender/chat.html', {'messages': messages})
+
+    def post(self, request, *args, **kwargs):
+        message_text = request.POST.get('message')
+        chat_type = request.POST.get('chat_type', 'general')
+
+        if message_text:
+            try:
+                # Create the user's message
+                user_message = ChatMessage.objects.create(
+                    sender=request.user,
+                    message_text=message_text,
+                    sent_time=timezone.now(),
+                    chat_type=chat_type
+                )
+
+                # Initialize AIService with the API key
+                ai_service = AIService(settings.GOOGLE_AI_API_KEY)
+
+                # Get context from previous messages
+                previous_messages = ChatMessage.objects.filter(
+                    Q(sender=request.user) | Q(receiver=request.user),
+                    chat_type=chat_type
+                ).order_by('-sent_time')[:5]
+
+                context = []
+                for msg in reversed(previous_messages):
+                    context.append({
+                        'is_user': not msg.is_ai_response,
+                        'content': msg.message_text
+                    })
+
+                # Get the AI response (synchronously)
+                ai_response = ai_service.get_ai_response(message_text, context, chat_type)
+
+                # Create the AI response message
+                ai_message = ChatMessage.objects.create(
+                    sender=request.user,  # AI message is sent by the user in the database
+                    message_text=ai_response,
+                    sent_time=timezone.now(),
+                    is_ai_response=True,
+                    chat_type=chat_type
+                )
+
+                # Return the response to the front-end
+                return JsonResponse({
+                    'status': 'success',
+                    'user_message': {
+                        'text': message_text,
+                        'time': user_message.sent_time.strftime('%H:%M')
+                    },
+                    'ai_response': {
+                        'text': ai_response,
+                        'time': ai_message.sent_time.strftime('%H:%M')
+                    }
+                })
+
+            except Exception as e:
+                print(f"Error in chat view: {str(e)}")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Failed to process AI response'
+                })
+
+        return JsonResponse({
+            'status': 'error',
+            'message': 'No message provided'
+        })

@@ -2,70 +2,47 @@ import google.generativeai as genai
 from typing import List, Dict
 
 class AIService:
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, max_history_length: int = 5):
+        # Configure the API key for Google Generative AI
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel('gemini-pro')
         
-        # Определяем промпты для разных типов чатов
+        # Define chat prompts for different types
         self.chat_prompts = {
-            'legal': """Вы - юридический консультант, специализирующийся на правах женщин и гендерном равенстве. 
-            Ваша задача - предоставлять точную правовую информацию и рекомендации по вопросам:
-            - Трудовое право и дискриминация на рабочем месте
-            - Семейное право
-            - Защита от домашнего насилия
-            - Права матерей и отпуск по уходу за ребенком
-            - Равная оплата труда
-            Отвечайте профессионально, но доступным языком.""",
-            
-            'psychological': """Вы - психолог, специализирующийся на поддержке женщин и гендерных вопросах.
-            Ваша задача - оказывать эмоциональную поддержку и давать рекомендации по вопросам:
-            - Преодоление стресса и тревожности
-            - Повышение самооценки
-            - Построение здоровых отношений
-            - Баланс работы и личной жизни
-            - Преодоление гендерных стереотипов
-            Отвечайте с эмпатией и пониманием.""",
-            
-            'general': """Вы - консультант по общим вопросам гендерного равенства и поддержки женщин.
-            Ваша задача - предоставлять информацию и рекомендации по темам:
-            - Образование и карьерное развитие
-            - Женское лидерство
-            - Общественные ресурсы и организации поддержки
-            - Здоровье и благополучие
-            - Культурные аспекты гендерного равенства
-            Отвечайте информативно и поддерживающе."""
+'legal': "Provide clear, concise, and accurate legal advice on any topic. Stay focused on the facts and answer logically.",
+
+'psychological': """Provide practical advice on managing stress, anxiety, self-esteem, relationships, and overcoming gender stereotypes. Offer support in a clear and empathetic manner.""",
+
+'general': """Offer useful, concise advice on gender equality, education, career development, leadership, and well-being. Keep responses practical and informative."""
+
         }
+        
+        self.max_history_length = max_history_length
 
     def get_ai_response(self, message: str, context: List[Dict], chat_type: str = 'general') -> str:
         try:
-            # Получаем соответствующий промпт для типа чата
+            # Get the corresponding prompt based on chat type
             chat_prompt = self.chat_prompts.get(chat_type, self.chat_prompts['general'])
             
-            # Формируем историю сообщений
-            chat_history = []
+            # Create the chat history
+            chat_history = [{'role': 'system', 'content': chat_prompt}]
             
-            # Добавляем начальный промпт
-            chat_history.append({
-                'role': 'system',
-                'content': chat_prompt
-            })
+            # Limit the context to the last N messages
+            context = context[-self.max_history_length:]
             
-            # Добавляем контекст предыдущих сообщений
+            # Add the context messages
             for msg in context:
                 role = 'user' if msg['is_user'] else 'assistant'
-                chat_history.append({
-                    'role': role,
-                    'content': msg['content']
-                })
+                chat_history.append({'role': role, 'content': msg['content']})
             
-            # Добавляем текущее сообщение пользователя
-            chat_history.append({
-                'role': 'user',
-                'content': message
-            })
+            # Add the current user message
+            chat_history.append({'role': 'user', 'content': message})
             
-            # Получаем ответ от модели
-            response = self.model.generate_content([msg['content'] for msg in chat_history])
+            # Prepare the message list to send to the model
+            messages = [msg['content'] for msg in chat_history]
+            
+            # Call the model synchronously
+            response = self.model.generate_content(messages)
             
             return response.text
             
